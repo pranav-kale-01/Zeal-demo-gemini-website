@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeal Connect | Automated Hotel Reconfirmation</title>
+    <meta name="description"
+        content="Automate hotel reconfirmations with AI. Save 70% costs and ensure 100% booking accuracy.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        zeal: {
+                            bg: '#020f0c',      // Deepest Teal/Black
+                            surface: '#0a261e',
+                            border: '#11604b',
+                            accent: '#3e8d11',
+                            glow: '#4ade80',
+                            white: '#f8fafc',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 8s ease-in-out infinite',
+                        'scroll': 'scroll 40s linear infinite',
+                        'scroll-slow': 'scroll 60s linear infinite',
+                        'pulse-glow': 'pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'aurora': 'aurora 20s linear infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        scroll: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' }, /* Seamless loop */
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+                            '50%': { opacity: '0.7', transform: 'scale(1.1)' },
+                        },
+                        aurora: {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                            '100%': { backgroundPosition: '0% 50%' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020f0c;
+            color: #f0fdf4;
+            overflow-x: hidden;
+        }
+
+        /* Subtle Grid Background */
+        .grid-bg {
+            background-image: linear-gradient(rgba(17, 96, 75, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(17, 96, 75, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+        }
+
+        /* 3D Tilt Container */
+        .tilt-card-container {
+            perspective: 1500px;
+        }
+
+        .tilt-card {
+            transform: rotateX(12deg) rotateY(-4deg) rotateZ(2deg);
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 50px 100px -20px rgba(0, 0, 0, 0.7),
+                0 0 80px -20px rgba(62, 141, 17, 0.15);
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            border-radius: 16px;
+            background: #0a261e;
+            overflow: visible;
+        }
+
+        .tilt-card:hover {
+            transform: rotateX(4deg) rotateY(-1deg) rotateZ(0deg) scale(1.02);
+            box-shadow:
+                0 0 0 1px rgba(62, 141, 17, 0.3),
+                0 30px 60px -10px rgba(0, 0, 0, 0.8),
+                0 0 100px -20px rgba(62, 141, 17, 0.3);
+        }
+
+        /* Floating 3D Elements */
+        .floating-badge {
+            position: absolute;
+            z-index: 30;
+            transform-style: preserve-3d;
+            transform: translateZ(40px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Image Transitions */
+        .feature-image {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        .feature-image.active {
+            opacity: 1;
+            transform: scale(1);
+            z-index: 10;
+        }
+
+        .feature-image.inactive {
+            opacity: 0;
+            transform: scale(1.05);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Text Gradients */
+        .text-gradient {
+            background: linear-gradient(to right, #ffffff, #86efac);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Marquee Mask */
+        .marquee-mask {
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        /* REFINED LOGO FILTER */
+        .logo-filter {
+            filter: grayscale(100%);
+            opacity: 0.6;
+            transition: all 0.4s ease;
+        }
+
+        .logo-filter:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        /* Aurora Background */
+        .aurora-bg {
+            background: radial-gradient(circle at 50% -20%, #11604b 0%, transparent 50%),
+                radial-gradient(circle at 100% 50%, #0a382b 0%, transparent 40%);
+            filter: blur(60px);
+            opacity: 0.4;
+        }
+
+        .glass-nav {
+            background: rgba(2, 15, 12, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Tab Styles */
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background-color: rgba(62, 141, 17, 0.2);
+            color: #4ade80;
+            border-color: rgba(62, 141, 17, 0.5);
+        }
+
+        /* Process Line */
+        .process-line {
+            position: absolute;
+            left: 24px;
+            top: 40px;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #11604b, rgba(17, 96, 75, 0.1));
+            z-index: 0;
+        }
+
+        /* NEW: Stack Layer Transitions */
+        .stack-layer {
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .stack-layer.active {
+            transform: translateY(var(--active-y)) translateZ(20px) scale(1.05);
+            border-color: #3e8d11;
+            box-shadow: 0 0 30px rgba(62, 141, 17, 0.4);
+            z-index: 50;
+        }
+
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+
+        .step-indicator.active {
+            background-color: #3e8d11;
+            color: white;
+            border-color: #3e8d11;
+            box-shadow: 0 0 15px rgba(62, 141, 17, 0.6);
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-zeal-accent selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/09/full-logo-new-ZC-PNG-color.png"
+                    alt="Zeal Connect Logo" class="h-10 w-auto object-contain">
+            </div>
+
+            <!-- Desktop Links -->
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+                <a href="#features" class="hover:text-white transition-colors">Features</a>
+                <a href="#how-it-works" class="hover:text-white transition-colors">Process</a>
+                <a href="#experts" class="hover:text-white transition-colors">Expert Services</a>
+                <a href="#brands" class="hover:text-white transition-colors">Customers</a>
+            </div>
+
+            <!-- CTA -->
+            <div class="flex items-center gap-4">
+                <a href="#demo"
+                    class="hidden md:block bg-zeal-accent hover:bg-[#2f6b0d] text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-[0_0_20px_-5px_rgba(62,141,17,0.4)]">
+                    Book Demo
+                </a>
+                <button class="md:hidden text-white"
+                    onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-zeal-bg border-b border-zeal-border p-4 absolute w-full">
+            <div class="flex flex-col gap-4 text-center">
+                <a href="#features" class="text-gray-300 py-2">Features</a>
+                <a href="#how-it-works" class="text-gray-300 py-2">Process</a>
+                <a href="#experts" class="text-gray-300 py-2">Experts</a>
+                <a href="#demo" class="bg-zeal-accent text-white py-3 rounded-lg font-bold">Book Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section (More Vertical Space) -->
+    <section class="relative pt-32 pb-32 lg:pt-48 lg:pb-40 overflow-hidden">
+        <!-- Grid Background -->
+        <div class="absolute inset-0 grid-bg z-0 pointer-events-none"></div>
+        <div class="absolute inset-0 aurora-bg -z-10 animate-pulse-glow"></div>
+
+        <div class="max-w-5xl mx-auto px-6 relative z-10 text-center flex flex-col items-center">
+
+            <!-- Badge -->
+            <div
+                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-10 hover:bg-white/10 transition-colors cursor-default backdrop-blur-md shadow-lg">
+                <span class="flex h-2 w-2 relative">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-zeal-accent opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-zeal-accent"></span>
+                </span>
+                <span class="text-xs font-semibold text-green-100 tracking-wide uppercase">AI Reconfirmation Engine
+                    2.0</span>
+            </div>
+
+            <!-- Headline -->
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-10 leading-[1.1] text-white drop-shadow-2xl">
+                Automate Certainty. <br />
+                <span class="text-gradient">Eliminate Errors.</span>
+            </h1>
+
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+                The AI platform that verifies hotel bookings 48 hours before arrival.
+                <span class="text-gray-200 font-medium">Zero phone calls. Zero denied check-ins.</span>
+            </p>
+
+            <!-- Buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-5 mb-16">
+                <a href="#demo"
+                    class="px-8 py-4 bg-white text-zeal-bg hover:bg-gray-100 rounded-full font-bold transition-all flex items-center justify-center gap-2 group shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)]">
+                    Start Free Pilot
+                    <i data-lucide="arrow-right"
+                        class="w-4 h-4 text-zeal-accent group-hover:translate-x-1 transition-transform"></i>
+                </a>
+                <a href="#how-it-works"
+                    class="px-8 py-4 bg-white/5 border border-white/10 hover:border-white/20 text-white rounded-full font-medium transition-all backdrop-blur-sm flex items-center gap-2 hover:bg-white/10">
+                    <i data-lucide="play-circle" class="w-4 h-4 text-gray-400"></i>
+                    See How it Works
+                </a>
+            </div>
+
+            <!-- HERO STATS ROW (NEW) -->
+            <div
+                class="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-4xl border-t border-b border-white/10 py-8 mb-24 animate-slide-up backdrop-blur-sm bg-white/5 rounded-xl">
+                <div class="text-center border-r border-white/10 last:border-0">
+                    <p class="text-3xl font-bold text-white mb-1">2M+</p>
+                    <p class="text-xs text-zeal-accent font-mono uppercase tracking-wide">Bookings Confirmed</p>
+                </div>
+                <div class="text-center border-r border-white/10 last:border-0">
+                    <p class="text-3xl font-bold text-white mb-1">99.99%</p>
+                    <p class="text-xs text-zeal-accent font-mono uppercase tracking-wide">Success Rate</p>
+                </div>
+                <div class="text-center border-r border-white/10 last:border-0">
+                    <p class="text-3xl font-bold text-white mb-1">15</p>
+                    <p class="text-xs text-zeal-accent font-mono uppercase tracking-wide">Languages Spoken</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-3xl font-bold text-white mb-1">40%</p>
+                    <p class="text-xs text-zeal-accent font-mono uppercase tracking-wide">Cost Savings</p>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE TABS & SHOWCASE -->
+            <div class="w-full max-w-5xl mx-auto flex flex-col items-center gap-12 mb-24">
+                <!-- 1. TABS (Controls) -->
+                <div
+                    class="flex flex-wrap justify-center gap-3 p-1.5 bg-white/5 rounded-full border border-white/10 backdrop-blur-md">
+                    <button
+                        class="tab-btn px-6 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white border border-transparent active"
+                        data-index="0">
+                        Overview
+                    </button>
+                    <button
+                        class="tab-btn px-6 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white border border-transparent"
+                        data-index="1">
+                        Analytics
+                    </button>
+                    <button
+                        class="tab-btn px-6 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white border border-transparent"
+                        data-index="2">
+                        Mobile App
+                    </button>
+                </div>
+
+                <!-- 2. DYNAMIC TEXT -->
+                <div class="text-center max-w-2xl min-h-[100px] transition-all duration-300" id="text-container">
+                    <h2 class="text-3xl font-bold text-white mb-3 animate-fade-in" id="dynamic-title">Complete
+                        Operational Clarity</h2>
+                    <p class="text-gray-400 animate-fade-in" id="dynamic-desc">Seamlessly manage verifications,
+                        analytics, and risk alerts from a single glass pane.</p>
+                </div>
+
+                <!-- 3. 3D CARD (Render) -->
+                <div class="relative w-full tilt-card-container">
+                    <!-- Glow behind screen -->
+                    <div
+                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[80%] bg-zeal-accent/10 blur-[120px] -z-10 rounded-full">
+                    </div>
+
+                    <div
+                        class="tilt-card relative z-10 group cursor-default bg-[#051a14] border border-white/10 aspect-[16/9]">
+                        <!-- Floating Badges (Pop out in 3D) -->
+                        <div id="floating-badge-1"
+                            class="floating-badge absolute -top-6 -right-6 bg-green-500 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-lg flex items-center gap-2 animate-float">
+                            <i data-lucide="activity" class="w-4 h-4"></i> Live: 99.8% Uptime
+                        </div>
+                        <div id="floating-badge-2"
+                            class="floating-badge absolute top-1/2 -left-10 bg-white text-zeal-bg px-4 py-2 rounded-lg font-bold text-xs shadow-lg flex items-center gap-2 animate-float hidden"
+                            style="animation-delay: 1s;">
+                            <i data-lucide="trending-up" class="w-4 h-4 text-zeal-accent"></i> ROI: +300%
+                        </div>
+
+                        <!-- Browser Header -->
+                        <div
+                            class="h-12 bg-[#020f0c]/90 border-b border-white/5 flex items-center px-4 justify-between backdrop-blur-md z-20 relative">
+                            <div class="flex gap-2 w-20">
+                                <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                            </div>
+                            <div
+                                class="text-[10px] font-mono text-gray-500 bg-white/5 px-4 py-1 rounded-full border border-white/5">
+                                dashboard.zealconnect.com</div>
+                            <div class="w-20"></div>
+                        </div>
+
+                        <!-- Images Container -->
+                        <div class="relative w-full h-full bg-black rounded-b-2xl overflow-hidden">
+                            <!-- Image 1 -->
+                            <img src="https://lh3.googleusercontent.com/d/1X_gR0uNro6kJ8C62MVXSoZgho1y5bMM3"
+                                alt="Dashboard Main"
+                                class="feature-image active absolute inset-0 w-full h-full object-cover">
+
+                            <!-- Image 2 -->
+                            <img src="https://lh3.googleusercontent.com/d/1ELQdeNsCPqo6TaSnUdrp4uXg760scCAK"
+                                alt="Analytics View"
+                                class="feature-image inactive absolute inset-0 w-full h-full object-cover">
+
+                            <!-- Image 3 -->
+                            <img src="https://lh3.googleusercontent.com/d/161ec_DFItlc1vlG9EqNwUDxb86N7bAZ1"
+                                alt="Mobile View"
+                                class="feature-image inactive absolute inset-0 w-full h-full object-cover">
+
+                            <!-- Overlay Gradient -->
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-[#020f0c] via-transparent to-transparent opacity-20 pointer-events-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW: HOW IT WORKS SECTION (INTERACTIVE) -->
+    <section id="how-it-works" class="py-32 bg-[#0a261e] border-t border-white/5 relative overflow-hidden">
+        <div
+            class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5">
+        </div>
+
+        <div class="max-w-6xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-20">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">How it works</h2>
+                <p class="text-gray-400">Seamless integration with your existing workflow.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-20 items-center">
+                <!-- Left: Steps -->
+                <div class="space-y-12 relative" id="steps-container">
+                    <!-- Vertical Line -->
+                    <div class="process-line"></div>
+
+                    <!-- Step 1 -->
+                    <div class="relative pl-16 group cursor-pointer step-item" data-step="1">
+                        <div
+                            class="step-indicator absolute left-0 top-0 w-12 h-12 bg-[#020f0c] border border-gray-700 text-gray-500 rounded-full flex items-center justify-center text-xl font-bold z-10">
+                            1</div>
+                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-zeal-accent transition">Connect
+                            Your Bookings</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li class="flex items-center gap-2"><span
+                                    class="w-1.5 h-1.5 bg-zeal-accent rounded-full"></span> API integration with your
+                                system</li>
+                            <li class="flex items-center gap-2"><span
+                                    class="w-1.5 h-1.5 bg-zeal-accent rounded-full"></span> Set Excel/CSV file format
+                            </li>
+                            <li class="flex items-center gap-2"><span
+                                    class="w-1.5 h-1.5 bg-zeal-accent rounded-full"></span> Email forwarding setup</li>
+                        </ul>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="relative pl-16 group cursor-pointer step-item" data-step="2">
+                        <div
+                            class="step-indicator absolute left-0 top-0 w-12 h-12 bg-[#020f0c] border border-gray-700 text-gray-500 rounded-full flex items-center justify-center text-xl font-bold transition-all z-10">
+                            2</div>
+                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-zeal-accent transition">AI Takes
+                            Over</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li class="flex items-center gap-2"><span
+                                    class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-zeal-accent transition"></span>
+                                Automatically identifies bookings</li>
+                            <li class="flex items-center gap-2"><span
+                                    class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-zeal-accent transition"></span>
+                                Reaches out 48-72 hours before check-in</li>
+                            <li class="flex items-center gap-2"><span
+                                    class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-zeal-accent transition"></span>
+                                Follows up persistently until confirmed</li>
+                        </ul>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative pl-16 group cursor-pointer step-item" data-step="3">
+                        <div
+                            class="step-indicator absolute left-0 top-0 w-12 h-12 bg-[#020f0c] border border-gray-700 text-gray-500 rounded-full flex items-center justify-center text-xl font-bold transition-all z-10">
+                            3</div>
+                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-zeal-accent transition">You Stay
+                            Updated</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li class="flex items-center gap-2"><span
+                                    class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-zeal-accent transition"></span>
+                                AI categorizes and prioritizes instantly</li>
+                            <li class="flex items-center gap-2"><span
+                                    class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-zeal-accent transition"></span>
+                                Auto-resolves routine queries</li>
+                            <li class="flex items-center gap-2"><span
+                                    class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-zeal-accent transition"></span>
+                                Escalates intelligently when needed</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right: Visual Stack (Interactive) -->
+                <div class="relative h-[600px] flex items-center justify-center perspective-container">
+                    <div class="relative w-80 h-80" id="stack-container">
+                        <!-- Layer 1 (Connect) -->
+                        <div id="layer-1"
+                            class="stack-layer absolute top-0 left-0 w-full h-48 bg-[#1a3b32] border border-white/10 rounded-2xl transform translate-y-[-80px] rotate-x-12 rotate-z-[-10deg] shadow-2xl flex flex-col items-center justify-center z-30 transition-all duration-500">
+                            <div
+                                class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-3 icon-container">
+                                <i data-lucide="database" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <span class="text-white font-bold text-lg">Connect</span>
+                        </div>
+
+                        <!-- Layer 2 (AI) -->
+                        <div id="layer-2"
+                            class="stack-layer absolute top-12 left-4 w-full h-48 bg-[#0f2922] border border-white/10 rounded-2xl transform translate-y-[0px] rotate-x-12 rotate-z-[-10deg] shadow-2xl flex flex-col items-center justify-center z-20 transition-all duration-500">
+                            <div
+                                class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-3 icon-container">
+                                <i data-lucide="cpu" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <span class="text-white font-bold text-lg">Processing</span>
+                        </div>
+
+                        <!-- Layer 3 (Updated) -->
+                        <div id="layer-3"
+                            class="stack-layer absolute top-24 left-8 w-full h-48 bg-[#051a14] border border-white/10 rounded-2xl transform translate-y-[80px] rotate-x-12 rotate-z-[-10deg] shadow-2xl flex flex-col items-center justify-center z-10 transition-all duration-500">
+                            <div
+                                class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-3 icon-container">
+                                <i data-lucide="check-circle" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <span class="text-white font-bold text-lg">Updated</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brands Marquee (FIXED: Light Background) -->
+    <section id="brands" class="py-20 border-y border-gray-100 overflow-hidden relative bg-white">
+        <div class="marquee-mask absolute inset-0 z-10 pointer-events-none"></div>
+        <div class="flex w-[200%] animate-scroll hover:[animation-play-state:paused] items-center">
+            <!-- Logos Set 1 -->
+            <div class="flex items-center justify-around w-1/2 px-12 gap-24">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/08/Group-1500.png"
+                    class="h-10 w-auto object-contain logo-filter">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/08/Group-1501.png"
+                    class="h-8 w-auto object-contain logo-filter">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/08/Group-1497.png"
+                    class="h-10 w-auto object-contain logo-filter">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/08/Group-1498.png"
+                    class="h-12 w-auto object-contain logo-filter">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/08/Group-1499.png"
+                    class="h-10 w-auto object-contain logo-filter">
+            </div>
+            <!-- Logos Set 2 -->
+            <div class="flex items-center justify-around w-1/2 px-12 gap-24">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/08/Group-1500.png"
+                    class="h-10 w-auto object-contain logo-filter">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/08/Group-1501.png"
+                    class="h-8 w-auto object-contain logo-filter">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/08/Group-1497.png"
+                    class="h-10 w-auto object-contain logo-filter">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/08/Group-1498.png"
+                    class="h-12 w-auto object-contain logo-filter">
+                <img src="https://zealconnect.com/wp-content/uploads/2025/08/Group-1499.png"
+                    class="h-10 w-auto object-contain logo-filter">
+            </div>
+        </div>
+        <p class="text-center text-xs text-gray-400 mt-8 font-bold uppercase tracking-[0.3em]">Trusted by 500+ Travel
+            Leaders</p>
+    </section>
+
+    <!-- NEW: EXPERTS + SAAS SECTION (More Space) -->
+    <section id="experts" class="py-40 bg-[#020f0c] relative overflow-hidden border-b border-white/5">
+        <!-- BG Elements -->
+        <div class="absolute right-0 top-0 w-1/2 h-full bg-zeal-accent/5 blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="mb-24">
+                <span class="text-zeal-accent font-bold tracking-widest uppercase text-sm mb-4 block">Hybrid
+                    Intelligence</span>
+                <h2 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">The Power of AI.<br />The Touch
+                    of Experts.</h2>
+                <p class="text-xl text-gray-400 max-w-2xl leading-relaxed">Most platforms give you a tool and walk away.
+                    Zeal provides the software to automate 90% of your work, and the human experts to handle the other
+                    10%.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Card 1: SaaS Power -->
+                <div
+                    class="relative group rounded-3xl bg-[#0a261e] border border-white/5 overflow-hidden h-[600px] flex flex-col justify-between p-12 hover:border-zeal-accent/30 transition-all duration-500">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-b from-zeal-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-500">
+                    </div>
+
+                    <div class="relative z-10">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-zeal-accent/20 flex items-center justify-center text-zeal-accent mb-8">
+                            <i data-lucide="cpu" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-4xl font-bold text-white mb-4">Zeal Platform</h3>
+                        <p class="text-gray-400 text-lg mb-8">For the 90% volume.</p>
+                        <ul class="space-y-5 text-gray-300">
+                            <li class="flex items-center gap-4"><i data-lucide="check"
+                                    class="text-zeal-accent w-5 h-5"></i> Auto-Reconfirmations</li>
+                            <li class="flex items-center gap-4"><i data-lucide="check"
+                                    class="text-zeal-accent w-5 h-5"></i> Real-time Updates</li>
+                            <li class="flex items-center gap-4"><i data-lucide="check"
+                                    class="text-zeal-accent w-5 h-5"></i> 24/7 Operations</li>
+                        </ul>
+                    </div>
+
+                    <div
+                        class="w-full h-40 bg-white/5 rounded-xl border border-white/5 backdrop-blur-sm mt-8 relative overflow-hidden shadow-inner">
+                        <div class="absolute inset-0 opacity-40 font-mono text-xs text-zeal-accent p-6 leading-relaxed">
+                            > VERIFY_BOOKING ID:8821... OK<br>
+                            > CHECK_IN_DATE: 2025-10-12... MATCH<br>
+                            > PAYMENT_STATUS... PENDING... ALERT<br>
+                            > RETRY_CONNECT... SUCCESS
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Expert Service -->
+                <div
+                    class="relative group rounded-3xl bg-white border border-gray-200 overflow-hidden h-[600px] flex flex-col justify-between p-12 hover:shadow-2xl transition-all duration-500">
+                    <div class="relative z-10">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 mb-8">
+                            <i data-lucide="users" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-4xl font-bold text-gray-900 mb-4">Zeal Experts</h3>
+                        <p class="text-gray-500 text-lg mb-8">For the 10% complexity.</p>
+                        <ul class="space-y-5 text-gray-600">
+                            <li class="flex items-center gap-4"><i data-lucide="check"
+                                    class="text-blue-500 w-5 h-5"></i> Dispute Resolution</li>
+                            <li class="flex items-center gap-4"><i data-lucide="check"
+                                    class="text-blue-500 w-5 h-5"></i> Relocation Management</li>
+                            <li class="flex items-center gap-4"><i data-lucide="check"
+                                    class="text-blue-500 w-5 h-5"></i> Peak Season Overflow</li>
+                        </ul>
+                    </div>
+
+                    <div class="w-full h-40 relative mt-8 flex items-end justify-end">
+                        <div class="flex -space-x-6">
+                            <div
+                                class="w-20 h-20 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center overflow-hidden shadow-lg z-10">
+                                <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
+                                    class="w-full h-full object-cover">
+                            </div>
+                            <div
+                                class="w-20 h-20 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center overflow-hidden shadow-lg z-20 translate-y-[-15px]">
+                                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                                    class="w-full h-full object-cover">
+                            </div>
+                            <div
+                                class="w-20 h-20 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center overflow-hidden shadow-lg z-10">
+                                <img src="https://i.pravatar.cc/150?u=a04258114e29026302d"
+                                    class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        <div
+                            class="absolute bottom-4 left-0 bg-blue-100 text-blue-800 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wide">
+                            Available On-Demand
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS (More Space) -->
+    <section class="py-40 bg-zeal-bg border-b border-white/5 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 text-center mb-20">
+            <h2 class="text-4xl font-bold text-white mb-4">What Ops Leaders Say</h2>
+            <p class="text-gray-400 text-lg">From local agencies to global OTAs.</p>
+        </div>
+
+        <!-- Scrolling Container -->
+        <div class="relative w-full">
+            <div class="absolute left-0 top-0 bottom-0 w-40 bg-gradient-to-r from-[#020f0c] to-transparent z-10"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-[#020f0c] to-transparent z-10"></div>
+
+            <div class="flex w-max animate-scroll-slow hover:[animation-play-state:paused] gap-8 px-6">
+                <!-- Card 1 -->
+                <div
+                    class="w-[450px] bg-[#0a261e] border border-white/10 p-10 rounded-2xl flex-shrink-0 hover:border-zeal-accent/50 transition duration-300">
+                    <div class="flex gap-1 text-zeal-accent mb-6">
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star"
+                            class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i
+                            data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star"
+                            class="w-5 h-5 fill-current"></i>
+                    </div>
+                    <p class="text-gray-300 mb-8 text-xl leading-relaxed">"Zeal transformed our operations. We used to
+                        have 20 agents just calling hotels. Now Zeal handles 90% of the volume automatically."</p>
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-lg">
+                            JD</div>
+                        <div>
+                            <p class="text-white font-bold">John Doe</p>
+                            <p class="text-sm text-gray-500">COO, Go Global Travels</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div
+                    class="w-[450px] bg-[#0a261e] border border-white/10 p-10 rounded-2xl flex-shrink-0 hover:border-zeal-accent/50 transition duration-300">
+                    <div class="flex gap-1 text-zeal-accent mb-6">
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star"
+                            class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i
+                            data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star"
+                            class="w-5 h-5 fill-current"></i>
+                    </div>
+                    <p class="text-gray-300 mb-8 text-xl leading-relaxed">"The risk detection is a lifesaver. It caught
+                        5 missing bookings last week alone, saving us thousands in relocation costs."</p>
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-lg">
+                            SJ</div>
+                        <div>
+                            <p class="text-white font-bold">Sarah Jenkins</p>
+                            <p class="text-sm text-gray-500">Ops Manager, iTrip</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div
+                    class="w-[450px] bg-[#0a261e] border border-white/10 p-10 rounded-2xl flex-shrink-0 hover:border-zeal-accent/50 transition duration-300">
+                    <div class="flex gap-1 text-zeal-accent mb-6">
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star"
+                            class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i
+                            data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star"
+                            class="w-5 h-5 fill-current"></i>
+                    </div>
+                    <p class="text-gray-300 mb-8 text-xl leading-relaxed">"Implementation was surprisingly fast. We were
+                        live in 3 days and saw cost reductions immediately."</p>
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-lg">
+                            MK</div>
+                        <div>
+                            <p class="text-white font-bold">Mike K.</p>
+                            <p class="text-sm text-gray-500">CTO, TravClan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div
+                    class="w-[450px] bg-[#0a261e] border border-white/10 p-10 rounded-2xl flex-shrink-0 hover:border-zeal-accent/50 transition duration-300">
+                    <div class="flex gap-1 text-zeal-accent mb-6">
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star"
+                            class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i
+                            data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star"
+                            class="w-5 h-5 fill-current"></i>
+                    </div>
+                    <p class="text-gray-300 mb-8 text-xl leading-relaxed">"Having the expert team on standby gives us
+                        total peace of mind during peak season."</p>
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-lg">
+                            AL</div>
+                        <div>
+                            <p class="text-white font-bold">Amanda L.</p>
+                            <p class="text-sm text-gray-500">Director, Peakpoint Global</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Duplicates for seamless loop -->
+                <div
+                    class="w-[450px] bg-[#0a261e] border border-white/10 p-10 rounded-2xl flex-shrink-0 hover:border-zeal-accent/50 transition duration-300">
+                    <div class="flex gap-1 text-zeal-accent mb-6">
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star"
+                            class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i
+                            data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star"
+                            class="w-5 h-5 fill-current"></i>
+                    </div>
+                    <p class="text-gray-300 mb-8 text-xl leading-relaxed">"Zeal transformed our operations. We used to
+                        have 20 agents just calling hotels. Now Zeal handles 90% of the volume automatically."</p>
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-lg">
+                            JD</div>
+                        <div>
+                            <p class="text-white font-bold">John Doe</p>
+                            <p class="text-sm text-gray-500">COO, Go Global Travels</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Metrics Section (High Impact, Light) -->
+    <section id="metrics" class="py-40 bg-zeal-white relative overflow-hidden">
+        <!-- Abstract Decoration -->
+        <div
+            class="absolute top-0 right-0 w-[500px] h-[500px] bg-green-100 rounded-full blur-[100px] opacity-60 -z-0 mix-blend-multiply">
+        </div>
+        <div
+            class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-100 rounded-full blur-[80px] opacity-60 -z-0 mix-blend-multiply">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-24">
+                <span class="text-zeal-accent font-bold tracking-widest uppercase text-sm mb-4 block">Proven
+                    Results</span>
+                <h2 class="text-4xl md:text-6xl font-extrabold text-zeal-bg mb-6 tracking-tight">Numbers that matter.
+                </h2>
+                <p class="text-xl text-gray-500 max-w-2xl mx-auto">We don't just automate tasks; we fundamentally change
+                    the economics of your operations center.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Metric 1 -->
+                <div
+                    class="bg-white p-12 rounded-[2rem] shadow-xl text-center group hover:-translate-y-2 transition duration-500 border border-gray-100">
+                    <div
+                        class="w-20 h-20 mx-auto bg-green-50 rounded-full flex items-center justify-center text-zeal-accent mb-8 group-hover:bg-zeal-accent group-hover:text-white transition shadow-sm">
+                        <i data-lucide="trending-up" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-7xl font-bold text-zeal-bg mb-4 counter" data-target="90">0</h3>
+                    <p class="text-2xl font-bold text-gray-800 mb-3">% Faster</p>
+                    <p class="text-gray-500">Reduction in operational turnaround time compared to manual agents.</p>
+                </div>
+
+                <!-- Metric 2 (Highlighted) -->
+                <div
+                    class="bg-zeal-bg p-12 rounded-[2rem] shadow-2xl text-center group hover:-translate-y-2 transition duration-500 relative overflow-hidden ring-4 ring-zeal-accent/20 transform scale-105 z-10">
+                    <div
+                        class="absolute top-0 right-0 w-40 h-40 bg-zeal-accent/20 rounded-full blur-3xl -mr-10 -mt-10 animate-pulse-glow">
+                    </div>
+                    <div
+                        class="w-20 h-20 mx-auto bg-white/10 rounded-full flex items-center justify-center text-white mb-8">
+                        <i data-lucide="dollar-sign" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-7xl font-bold text-white mb-4 flex items-center justify-center gap-1"><span
+                            class="counter" data-target="70">0</span>%</h3>
+                    <p class="text-2xl font-bold text-zeal-glow mb-3">Cost Savings</p>
+                    <p class="text-gray-400">Direct impact on your bottom line by eliminating international call charges
+                        and labor.</p>
+                </div>
+
+                <!-- Metric 3 -->
+                <div
+                    class="bg-white p-12 rounded-[2rem] shadow-xl text-center group hover:-translate-y-2 transition duration-500 border border-gray-100">
+                    <div
+                        class="w-20 h-20 mx-auto bg-green-50 rounded-full flex items-center justify-center text-zeal-accent mb-8 group-hover:bg-zeal-accent group-hover:text-white transition shadow-sm">
+                        <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-7xl font-bold text-zeal-bg mb-4 counter" data-target="100">0</h3>
+                    <p class="text-2xl font-bold text-gray-800 mb-3">% Accuracy</p>
+                    <p class="text-gray-500">Every action is logged. Every confirmation code is verified. Zero denied
+                        check-ins.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / CTA Area -->
+    <section id="demo" class="py-32 bg-zeal-bg border-t border-zeal-border/30">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-5xl md:text-6xl font-bold mb-8 text-white tracking-tight">Ready to modernize?</h2>
+            <p class="text-gray-400 mb-12 text-xl">Join forward-thinking travel companies. Book a demo today.</p>
+
+            <form class="text-left glass-card p-10 rounded-2xl max-w-xl mx-auto"
+                onsubmit="event.preventDefault(); alert('Thanks! We will be in touch.')">
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold text-zeal-accent mb-2 uppercase tracking-wide">Work
+                            Email</label>
+                        <input type="email" required
+                            class="w-full bg-[#051a14] border border-zeal-border/50 rounded-lg px-5 py-4 text-white focus:outline-none focus:border-zeal-accent focus:ring-1 focus:ring-zeal-accent transition placeholder-gray-600 text-lg"
+                            placeholder="you@company.com">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-zeal-accent mb-2 uppercase tracking-wide">Company
+                            Name</label>
+                        <input type="text" required
+                            class="w-full bg-[#051a14] border border-zeal-border/50 rounded-lg px-5 py-4 text-white focus:outline-none focus:border-zeal-accent focus:ring-1 focus:ring-zeal-accent transition placeholder-gray-600 text-lg"
+                            placeholder="Travel Co.">
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-zeal-accent hover:bg-[#2f6b0d] text-white font-bold py-5 rounded-lg transition-all shadow-lg mt-4 transform hover:scale-105 text-lg">
+                        Schedule Demo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- MEGA FOOTER -->
+    <footer class="bg-[#010806] py-20 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 mb-16">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-3 mb-6">
+                        <img src="https://zealconnect.com/wp-content/uploads/2025/09/full-logo-new-ZC-PNG-color.png"
+                            alt="Zeal Logo" class="h-8 w-auto object-contain brightness-0 invert opacity-80">
+                    </div>
+                    <p class="text-gray-500 text-sm leading-relaxed">Automating travel operations with AI precision and
+                        human expertise. Built for the modern travel industry.</p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6">Product</h4>
+                    <ul class="space-y-4 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-zeal-accent transition">Reconfirmation</a></li>
+                        <li><a href="#" class="hover:text-zeal-accent transition">Risk Detection</a></li>
+                        <li><a href="#" class="hover:text-zeal-accent transition">Analytics</a></li>
+                        <li><a href="#" class="hover:text-zeal-accent transition">Mobile App</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6">Company</h4>
+                    <ul class="space-y-4 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-zeal-accent transition">About Us</a></li>
+                        <li><a href="#" class="hover:text-zeal-accent transition">Careers</a></li>
+                        <li><a href="#" class="hover:text-zeal-accent transition">Blog</a></li>
+                        <li><a href="#" class="hover:text-zeal-accent transition">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6">Connect</h4>
+                    <div class="flex gap-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-zeal-accent hover:text-white transition">
+                            <i data-lucide="linkedin" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-zeal-accent hover:text-white transition">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-zeal-accent hover:text-white transition">
+                            <i data-lucide="facebook" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600">
+                <p>© 2025 Zeal Connect. All rights reserved.</p>
+                <div class="flex gap-8">
+                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition">Terms of Service</a>
+                    <a href="#" class="hover:text-white transition">Security</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg', 'glass-nav');
+                navbar.classList.remove('bg-transparent');
+            } else {
+                navbar.classList.remove('shadow-lg', 'glass-nav');
+                navbar.classList.add('bg-transparent');
+            }
+        });
+
+        // Counter Animation
+        const counters = document.querySelectorAll('.counter');
+        const animateCounters = () => {
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const count = +counter.innerText;
+                const increment = target / 40;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(animateCounters, 30);
+                } else {
+                    counter.innerText = target;
+                }
+            });
+        };
+
+        // Trigger animation when metrics section is in view
+        let animated = false;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !animated) {
+                    animateCounters();
+                    animated = true;
+                }
+            });
+        }, { threshold: 0.5 });
+        observer.observe(document.getElementById('metrics'));
+
+        // --- FEATURE DATA (Headings + Descriptions + Badge State) ---
+        const featureData = [
+            {
+                title: "Complete Operational Clarity",
+                desc: "Seamlessly manage verifications, analytics, and risk alerts from a single glass pane.",
+                badge: "live"
+            },
+            {
+                title: "Deep-Dive Analytics",
+                desc: "Track cost savings, verification speeds, and error rates. Identify trends instantly.",
+                badge: "analytics"
+            },
+            {
+                title: "Power in Your Pocket",
+                desc: "Access critical alerts and approve exceptions on the go with our mobile app.",
+                badge: "mobile"
+            }
+        ];
+
+        // --- TAB LOGIC ---
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const featureImages = document.querySelectorAll('.feature-image');
+        const dynamicTitle = document.getElementById('dynamic-title');
+        const dynamicDesc = document.getElementById('dynamic-desc');
+        const badge1 = document.getElementById('floating-badge-1');
+        const badge2 = document.getElementById('floating-badge-2');
+        let activeIndex = 0;
+        let autoPlayInterval;
+
+        function updateFeature(index) {
+            // Update Buttons
+            tabBtns.forEach((btn, i) => {
+                if (i === index) {
+                    btn.classList.add('active');
+                    btn.classList.remove('text-gray-400', 'border-transparent');
+                    btn.classList.add('text-white');
+                } else {
+                    btn.classList.remove('active', 'text-white');
+                    btn.classList.add('text-gray-400', 'border-transparent');
+                }
+            });
+
+            // Update Text
+            dynamicTitle.style.opacity = '0';
+            dynamicDesc.style.opacity = '0';
+
+            setTimeout(() => {
+                dynamicTitle.innerText = featureData[index].title;
+                dynamicDesc.innerText = featureData[index].desc;
+                dynamicTitle.style.opacity = '1';
+                dynamicDesc.style.opacity = '1';
+            }, 200);
+
+            // Update Images
+            featureImages.forEach((img, i) => {
+                if (i === index) {
+                    img.classList.add('active');
+                    img.classList.remove('inactive');
+                } else {
+                    img.classList.remove('active');
+                    img.classList.add('inactive');
+                }
+            });
+
+            // Update 3D Badges based on state
+            if (featureData[index].badge === 'live') {
+                badge1.classList.remove('hidden');
+                badge2.classList.add('hidden');
+            } else if (featureData[index].badge === 'analytics') {
+                badge1.classList.add('hidden');
+                badge2.classList.remove('hidden');
+            } else {
+                badge1.classList.add('hidden');
+                badge2.classList.add('hidden');
+            }
+
+            activeIndex = index;
+        }
+
+        // Click Handlers
+        tabBtns.forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                updateFeature(index);
+                clearInterval(autoPlayInterval); // Stop auto-play on interaction
+                startAutoPlay(); // Restart timer
+            });
+        });
+
+        // Auto-play Logic
+        function startAutoPlay() {
+            autoPlayInterval = setInterval(() => {
+                const nextIndex = (activeIndex + 1) % featureData.length;
+                updateFeature(nextIndex);
+            }, 5000);
+        }
+
+        startAutoPlay();
+
+        // --- HOW IT WORKS HOVER LOGIC (NEW) ---
+        const stepItems = document.querySelectorAll('.step-item');
+        const layers = {
+            1: document.getElementById('layer-1'),
+            2: document.getElementById('layer-2'),
+            3: document.getElementById('layer-3')
+        };
+
+        // Reset function to default state (all visible in stack)
+        function resetLayers() {
+            Object.values(layers).forEach(layer => {
+                layer.classList.remove('active');
+                layer.style.opacity = '1';
+                // Remove inline styles from hover
+                layer.style.transform = '';
+                layer.style.zIndex = '';
+            });
+        }
+
+        stepItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                const step = item.dataset.step;
+
+                // De-emphasize all layers first
+                Object.values(layers).forEach(l => l.style.opacity = '0.4');
+
+                // Highlight target layer
+                const activeLayer = layers[step];
+                activeLayer.style.opacity = '1';
+                activeLayer.classList.add('active');
+
+                // Custom transforms for "pop out" effect based on step
+                // Using CSS variables for cleaner JS, but direct styles for complex 3D logic here
+                if (step === '1') {
+                    activeLayer.style.setProperty('--active-y', '-100px'); // Pop higher
+                    activeLayer.style.zIndex = '50';
+                } else if (step === '2') {
+                    activeLayer.style.setProperty('--active-y', '0px');
+                    activeLayer.style.zIndex = '60'; // Middle layer on top
+                } else {
+                    activeLayer.style.setProperty('--active-y', '100px'); // Pop lower
+                    activeLayer.style.zIndex = '70';
+                }
+
+                // Update indicator
+                document.querySelectorAll('.step-indicator').forEach(ind => ind.classList.remove('active'));
+                item.querySelector('.step-indicator').classList.add('active');
+            });
+
+            item.addEventListener('mouseleave', () => {
+                resetLayers();
+                // Reset indicator
+                document.querySelectorAll('.step-indicator').forEach(ind => ind.classList.remove('active'));
+            });
+        });
+
+    </script>
+</body>
+
+</html>
