@@ -205,7 +205,7 @@
             z-index: 0;
         }
 
-        /* NEW: Stack Layer Transitions */
+        /* Stack Layer Transitions */
         .stack-layer {
             transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -227,6 +227,11 @@
             border-color: #3e8d11;
             box-shadow: 0 0 15px rgba(62, 141, 17, 0.6);
         }
+
+        /* Logo White Filter for Header */
+        .header-logo-invert {
+            filter: brightness(0) invert(1);
+        }
     </style>
 </head>
 
@@ -234,25 +239,27 @@
 
     <!-- Navigation -->
     <nav class="fixed w-full z-50 top-0 transition-all duration-300 glass-nav" id="navbar">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <!-- Logo -->
+        <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+            <!-- Logo (Updated with Filter) -->
             <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
                 <img src="https://zealconnect.com/wp-content/uploads/2025/09/full-logo-new-ZC-PNG-color.png"
-                    alt="Zeal Connect Logo" class="h-10 w-auto object-contain">
+                    alt="Zeal Connect Logo"
+                    class="h-40 w-auto object-contain header-logo-invert opacity-90 hover:opacity-100 transition-opacity">
             </div>
 
-            <!-- Desktop Links -->
-            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-                <a href="#features" class="hover:text-white transition-colors">Features</a>
-                <a href="#how-it-works" class="hover:text-white transition-colors">Process</a>
-                <a href="#experts" class="hover:text-white transition-colors">Expert Services</a>
-                <a href="#brands" class="hover:text-white transition-colors">Customers</a>
+            <!-- Desktop Links (Accurate) -->
+            <div class="hidden md:flex items-center gap-10 text-sm font-medium text-gray-300">
+                <a href="#features" class="hover:text-white hover:text-shadow-glow transition-all">Features</a>
+                <a href="#how-it-works" class="hover:text-white hover:text-shadow-glow transition-all">Process</a>
+                <a href="#experts" class="hover:text-white hover:text-shadow-glow transition-all">Expert Services</a>
+                <a href="#brands" class="hover:text-white hover:text-shadow-glow transition-all">Customers</a>
+                <a href="#metrics" class="hover:text-white hover:text-shadow-glow transition-all">ROI</a>
             </div>
 
             <!-- CTA -->
             <div class="flex items-center gap-4">
                 <a href="#demo"
-                    class="hidden md:block bg-zeal-accent hover:bg-[#2f6b0d] text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-[0_0_20px_-5px_rgba(62,141,17,0.4)]">
+                    class="hidden md:block bg-zeal-accent hover:bg-[#2f6b0d] text-white px-7 py-3 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-[0_0_20px_-5px_rgba(62,141,17,0.4)]">
                     Book Demo
                 </a>
                 <button class="md:hidden text-white"
@@ -262,12 +269,12 @@
             </div>
         </div>
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-zeal-bg border-b border-zeal-border p-4 absolute w-full">
-            <div class="flex flex-col gap-4 text-center">
-                <a href="#features" class="text-gray-300 py-2">Features</a>
-                <a href="#how-it-works" class="text-gray-300 py-2">Process</a>
-                <a href="#experts" class="text-gray-300 py-2">Experts</a>
-                <a href="#demo" class="bg-zeal-accent text-white py-3 rounded-lg font-bold">Book Demo</a>
+        <div id="mobile-menu" class="hidden md:hidden bg-zeal-bg border-b border-zeal-border p-6 absolute w-full">
+            <div class="flex flex-col gap-6 text-center">
+                <a href="#features" class="text-gray-300 text-lg">Features</a>
+                <a href="#how-it-works" class="text-gray-300 text-lg">Process</a>
+                <a href="#experts" class="text-gray-300 text-lg">Experts</a>
+                <a href="#demo" class="bg-zeal-accent text-white py-4 rounded-xl font-bold text-lg">Book Demo</a>
             </div>
         </div>
     </nav>
@@ -298,7 +305,7 @@
                 <span class="text-gradient">Eliminate Errors.</span>
             </h1>
 
-            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-14 font-light leading-relaxed">
                 The AI platform that verifies hotel bookings 48 hours before arrival.
                 <span class="text-gray-200 font-medium">Zero phone calls. Zero denied check-ins.</span>
             </p>
@@ -911,9 +918,9 @@
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid md:grid-cols-4 gap-12 mb-16">
                 <div class="col-span-1 md:col-span-1">
-                    <div class="flex items-center gap-3 mb-6">
+                    <div class="">
                         <img src="https://zealconnect.com/wp-content/uploads/2025/09/full-logo-new-ZC-PNG-color.png"
-                            alt="Zeal Logo" class="h-8 w-auto object-contain brightness-0 invert opacity-80">
+                            alt="Zeal Logo" class="w-36 h-fit object-contain brightness-0 invert opacity-80">
                     </div>
                     <p class="text-gray-500 text-sm leading-relaxed">Automating travel operations with AI precision and
                         human expertise. Built for the modern travel industry.</p>
